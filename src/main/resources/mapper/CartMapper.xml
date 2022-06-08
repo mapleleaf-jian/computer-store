@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ms.store.mapper.CartMapper">
+    <resultMap id="CartEntityMap" type="ms.store.entity.Cart">
+        <id property="cid" column="cid"/>
+        <result property="uid" column="uid"/>
+        <result property="pid" column="pid"/>
+        <result property="price" column="price"/>
+        <result property="num" column="num"/>
+        <result property="createdUser" column="created_user"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="modifiedUser" column="modified_user"/>
+        <result property="modifiedTime" column="modified_time"/>
+    </resultMap>
+
+    <insert id="insertCart" useGeneratedKeys="true" keyProperty="cid">
+        insert into t_cart (uid, pid, price, num, created_user, created_time, modified_user, modified_time)
+        values (#{uid}, #{pid}, #{price}, #{num}, #{createdUser}, #{createdTime}, #{modifiedUser}, #{modifiedTime})
+    </insert>
+
+    <update id="updateNumByCid">
+        update t_cart set num=#{num}, modified_user=#{modifiedUser}, modified_time=#{modifiedTime}
+        where cid=#{cid}
+    </update>
+
+    <select id="findByUidAndPid" resultMap="CartEntityMap">
+        select * from t_cart where pid=#{pid} and uid=#{uid}
+    </select>
+
+    <select id="findVOCartsByUid" resultType="ms.store.vo.CartVO">
+        select cid, uid, pid, image, title, c.price, c.num, p.price as realPrice
+        from t_cart c left join t_product p on p.id = c.pid
+        where uid = #{uid}
+            <if test="title != null" >
+                and title like  #{title}
+            </if>
+        order by c.created_time desc
+    </select>
+
+    <select id="findByCid" resultMap="CartEntityMap">
+        select * from t_cart where cid=#{cid}
+    </select>
+
+    <select id="findVOCartByCid" resultType="ms.store.vo.CartVO">
+        select cid, uid, pid, image, title, c.price, c.num, p.price as realPrice
+        from t_cart c left join t_product p on p.id = c.pid
+        where cid in (
+            <foreach collection="cids" item="cid" separator=",">
+                #{cid}
+            </foreach>
+            )
+        order by c.created_time desc
+    </select>
+
+    <delete id="deleteCartByCid">
+        delete from t_cart where cid=#{cid}
+    </delete>
+
+    <delete id="deleteCartsByCids">
+        delete from t_cart
+        where cid in (
+            <foreach collection="cids" item="cid" separator=",">
+                #{cid}
+            </foreach>
+            )
+    </delete>
+</mapper>
