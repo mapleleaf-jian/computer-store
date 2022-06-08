@@ -2,3 +2,4 @@
 后端采用SpringBoot搭建总体框架，使用MySQL数据库进行数据的存储，使用MyBatis进行数据处理
 前端采用html编写，并使用ajax发送异步请求进行前后端数据的交互
 适合刚学完SpringBoot的新手练习使用
+项目所使用的数据库及一些练习数据在store.sql文件中
